@@ -10,7 +10,7 @@ import type { KubeConfig } from "@kubernetes/client-node";
 import { HttpError } from "@kubernetes/client-node";
 import type { Kubectl } from "../../main/kubectl/kubectl";
 import type { KubeconfigManager } from "../../main/kubeconfig-manager/kubeconfig-manager";
-import { loadConfigFromFile, loadConfigFromFileSync, validateKubeConfig } from "../kube-helpers";
+import { loadConfigFromFile, loadConfigFromString, validateKubeConfig } from "../kube-helpers";
 import type { KubeApiResource, KubeResource } from "../rbac";
 import { apiResourceRecord, apiResources } from "../rbac";
 import { VersionDetector } from "../../main/cluster-detectors/version-detector";
@@ -24,6 +24,7 @@ import { clusterListNamespaceForbiddenChannel } from "../ipc/cluster";
 import type { CanI } from "./authorization-review.injectable";
 import type { ListNamespaces } from "./list-namespaces.injectable";
 import assert from "assert";
+import type { ReadFileSync } from "../fs/read-file-sync.injectable";
 import type { Logger } from "../logger";
 
 export interface ClusterDependencies {
@@ -34,6 +35,8 @@ export interface ClusterDependencies {
   createKubectl: (clusterVersion: string) => Kubectl;
   createAuthorizationReview: (config: KubeConfig) => CanI;
   createListNamespaces: (config: KubeConfig) => ListNamespaces;
+  readFileSync: ReadFileSync;
+  readonly logger: Logger;
 }
 
 /**
@@ -239,7 +242,8 @@ export class Cluster implements ClusterModel, ClusterState {
     this.id = model.id;
     this.updateModel(model);
 
-    const { config } = loadConfigFromFileSync(this.kubeConfigPath);
+    const configData = this.dependencies.readFileSync(this.kubeConfigPath, "utf-8");
+    const { config } = loadConfigFromString(configData);
     const validationError = validateKubeConfig(config, this.contextName);
 
     if (validationError) {
@@ -595,7 +599,6 @@ export class Cluster implements ClusterModel, ClusterState {
    * @param state cluster state
    */
   pushState(state = this.getState()) {
-    this.dependencies.logger.silly(`[CLUSTER]: push-state`, state);
     broadcastMessage("cluster:state", this.id, state);
   }
 

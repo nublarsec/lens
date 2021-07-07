@@ -10,8 +10,9 @@ import createKubeconfigManagerInjectable from "../kubeconfig-manager/create-kube
 import createKubectlInjectable from "../kubectl/create-kubectl.injectable";
 import createContextHandlerInjectable from "../context-handler/create-context-handler.injectable";
 import { createClusterInjectionToken } from "../../common/cluster/create-cluster-injection-token";
-import authorizationReviewInjectable from "../../common/cluster/authorization-review.injectable";
-import listNamespacesInjectable from "../../common/cluster/list-namespaces.injectable";
+import createAuthorizationReviewInjectable from "../../common/cluster/authorization-review.injectable";
+import createListNamespacesInjectable from "../../common/cluster/list-namespaces.injectable";
+import readFileSyncInjectable from "../../common/fs/read-file-sync.injectable";
 import loggerInjectable from "../../common/logger.injectable";
 
 const createClusterInjectable = getInjectable({
@@ -23,8 +24,9 @@ const createClusterInjectable = getInjectable({
       createKubeconfigManager: di.inject(createKubeconfigManagerInjectable),
       createKubectl: di.inject(createKubectlInjectable),
       createContextHandler: di.inject(createContextHandlerInjectable),
-      createAuthorizationReview: di.inject(authorizationReviewInjectable),
-      createListNamespaces: di.inject(listNamespacesInjectable),
+      createAuthorizationReview: di.inject(createAuthorizationReviewInjectable),
+      createListNamespaces: di.inject(createListNamespacesInjectable),
+      readFileSync: di.inject(readFileSyncInjectable),
       logger: di.inject(loggerInjectable),
     };
 

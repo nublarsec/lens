@@ -20,6 +20,8 @@ import { parse } from "url";
 import loggerInjectable from "../../common/logger.injectable";
 import type { Logger } from "../../common/logger";
 import assert from "assert";
+import readFileSyncInjectable from "../../common/fs/read-file-sync.injectable";
+import type { ContextHandler } from "../context-handler/context-handler";
 
 console = new Console(process.stdout, process.stderr); // fix mockFS
 
@@ -82,6 +84,7 @@ describe("kubeconfig manager tests", () => {
       ensureServer: jest.fn(),
     }));
 
+    di.override(readFileSyncInjectable, () => fse.readFileSync); // TODO: don't bypass injectables
     const createCluster = di.inject(createClusterInjectionToken);
 
     createKubeconfigManager = di.inject(createKubeconfigManagerInjectable);

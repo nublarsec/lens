@@ -12,6 +12,7 @@ import { getInjectable } from "@ogre-tools/injectable";
 import asyncFn from "@async-fn/jest";
 import parseRequestInjectable from "./parse-request.injectable";
 import { contentTypes } from "./router-content-types";
+import createK8sResourceApplierInjectable from "../k8s/resource-applier/create.injectable";
 import mockFs from "mock-fs";
 import type { MockInstance } from "jest-mock";
 import type { SetRequired } from "type-fest";
@@ -38,6 +39,12 @@ describe("router", () => {
     mockFs();
 
     di.override(parseRequestInjectable, () => () => Promise.resolve({ payload: "some-payload" }));
+    di.override(createK8sResourceApplierInjectable, () => () => ({
+      apply: jest.fn(),
+      kubectlApplyAll: jest.fn(),
+      kubectlDeleteAll: jest.fn(),
+      patch: jest.fn(),
+    }));
 
     await di.runSetups();
 

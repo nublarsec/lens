@@ -21,6 +21,8 @@ import openDeleteClusterDialogInjectable from "../open.injectable";
 import storesAndApisCanBeCreatedInjectable from "../../../stores-apis-can-be-created.injectable";
 import createKubeconfigManagerInjectable from "../../../../main/kubeconfig-manager/create-kubeconfig-manager.injectable";
 import ipcRendererInjectable from "../../../app-paths/get-value-from-registered-channel/ipc-renderer/ipc-renderer.injectable";
+import readFileSyncInjectable from "../../../../common/fs/read-file-sync.injectable";
+import { readFileSync } from "fs";
 
 jest.mock("electron", () => ({
   app: {
@@ -89,12 +91,11 @@ users:
     token: kubeconfig-user-q4lm4:xxxyyyy
 `;
 
-let config: KubeConfig;
-
 describe("<DeleteClusterDialog />", () => {
   let createCluster: (model: ClusterModel) => Cluster;
   let openDeleteClusterDialog: OpenDeleteClusterDialog;
   let render: DiRender;
+  let config: KubeConfig;
 
   beforeEach(async () => {
     const { mainDi, rendererDi, runSetups } = getDisForUnitTesting({ doGeneralOverrides: true });
@@ -113,6 +114,8 @@ describe("<DeleteClusterDialog />", () => {
     await runSetups();
 
     openDeleteClusterDialog = rendererDi.inject(openDeleteClusterDialogInjectable);
+    mainDi.override(readFileSyncInjectable, () => readFileSync);
+
     createCluster = mainDi.inject(createClusterInjectionToken);
   });
 
