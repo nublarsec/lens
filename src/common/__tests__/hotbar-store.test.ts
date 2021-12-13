@@ -282,7 +282,7 @@ describe("HotbarStore", () => {
     });
   });
 
-  describe("given data from 5.0.0-beta.3 and version being 5.0.0-beta.10", () => {
+  describe("given data from 5.0.0-beta.3 and version being 5.5.0-beta.1", () => {
     beforeEach(async () => {
       const configurationToBeMigrated = {
         "some-electron-app-path-for-user-data": {
@@ -348,7 +348,7 @@ describe("HotbarStore", () => {
 
       mockFs(configurationToBeMigrated);
 
-      di.override(appVersionInjectable, () => "5.0.0-beta.10");
+      di.override(appVersionInjectable, () => "5.5.0-beta.1");
 
       await di.runSetups();
 
@@ -375,6 +375,7 @@ describe("HotbarStore", () => {
           name: "my-aws-cluster",
           source: "local",
           uid: "some-aws-id",
+          shortName: "mac",
         },
       });
     });

@@ -22,6 +22,8 @@ import entitySettingsRouteParametersInjectable from "./entity-settings-route-par
 import type { ObservableHistory } from "mobx-observable-history";
 import catalogEntityRegistryInjectable from "../../api/catalog/entity/registry.injectable";
 import observableHistoryInjectable from "../../navigation/observable-history.injectable";
+import { getIconColourHash } from "../../../common/catalog/helpers";
+import { EntityIcon } from "../entity-icon";
 
 interface Dependencies {
   entityId: IComputedValue<string>;
@@ -88,12 +90,12 @@ class NonInjectedEntitySettings extends React.Component<Dependencies> {
       <>
         <div className="flex items-center pb-8">
           <Avatar
-            title={entity.getName()}
-            colorHash={`${entity.getName()}-${entity.metadata.source}`}
-            src={entity.spec.icon?.src}
+            colorHash={getIconColourHash(this.entity)}
             className={styles.settingsAvatar}
             size={40}
-          />
+          >
+            <EntityIcon entity={this.entity}/>
+          </Avatar>
           <div className={styles.entityName}>
             {entity.getName()}
           </div>

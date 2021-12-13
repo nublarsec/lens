@@ -27,7 +27,7 @@ import { disposer, getAppVersion, getAppVersionFromProxyServer } from "../common
 import { ipcMainOn } from "../common/ipc";
 import { startUpdateChecking } from "./app-updater";
 import { IpcRendererNavigationEvents } from "../renderer/navigation/events";
-import { startCatalogSyncToRenderer } from "./catalog-pusher";
+import { pushCatalogToRenderer } from "./catalog-pusher";
 import { catalogEntityRegistry } from "./catalog";
 import { HelmRepoManager } from "./helm/helm-repo-manager";
 import { syncWeblinks } from "./catalog-sources";
@@ -63,6 +63,7 @@ import hotbarStoreInjectable from "../common/hotbars/store.injectable";
 import applicationMenuItemsInjectable from "./menu/application-menu-items.injectable";
 import type { DiContainer } from "@ogre-tools/injectable";
 import { init } from "@sentry/electron/main";
+import { EntityPreferencesStore } from "../common/entity-preferences-store";
 
 async function main(di: DiContainer) {
   app.setName(appName);
@@ -320,7 +321,10 @@ async function main(di: DiContainer) {
   }
 
   ipcMainOn(IpcRendererNavigationEvents.LOADED, async () => {
-    onCloseCleanup.push(startCatalogSyncToRenderer(catalogEntityRegistry));
+    onCloseCleanup.push(pushCatalogToRenderer({
+      catalogEntityRegistry,
+      entityPreferencesStore: EntityPreferencesStore.createInstance(),
+    }));
 
     const directoryForKubeConfigs = di.inject(directoryForKubeConfigsInjectable);
 
