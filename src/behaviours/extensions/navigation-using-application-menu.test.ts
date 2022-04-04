@@ -12,6 +12,8 @@ import type { ExtensionsStore } from "../../extensions/extensions-store/extensio
 import fileSystemProvisionerStoreInjectable from "../../extensions/extension-loader/file-system-provisioner-store/file-system-provisioner-store.injectable";
 import type { FileSystemProvisionerStore } from "../../extensions/extension-loader/file-system-provisioner-store/file-system-provisioner-store";
 import focusWindowInjectable from "../../renderer/ipc-channel-listeners/focus-window.injectable";
+import downloadBinaryInjectable, { type DownloadBinary } from "../../common/fetch/download-binary.injectable";
+import downloadJsonInjectable, { type DownloadJson } from "../../common/fetch/download-json.injectable";
 
 // TODO: Make components free of side effects by making them deterministic
 jest.mock("../../renderer/components/input/input");
@@ -20,6 +22,8 @@ describe("extensions - navigation using application menu", () => {
   let applicationBuilder: ApplicationBuilder;
   let rendered: RenderResult;
   let focusWindowMock: jest.Mock;
+  let downloadJson: jest.MockedFunction<DownloadJson>;
+  let downloadBinary: jest.MockedFunction<DownloadBinary>;
 
   beforeEach(async () => {
     applicationBuilder = getApplicationBuilder().beforeSetups(({ mainDi, rendererDi }) => {
@@ -28,8 +32,12 @@ describe("extensions - navigation using application menu", () => {
       rendererDi.override(fileSystemProvisionerStoreInjectable, () => ({}) as unknown as FileSystemProvisionerStore);
 
       focusWindowMock = jest.fn();
+      downloadJson = jest.fn().mockImplementation((url) => { throw new Error(`Unexpected call to downloadJson for url=${url}`); });
+      downloadBinary = jest.fn().mockImplementation((url) => { throw new Error(`Unexpected call to downloadJson for url=${url}`); });
 
       rendererDi.override(focusWindowInjectable, () => focusWindowMock);
+      rendererDi.override(downloadJsonInjectable, () => downloadJson);
+      rendererDi.override(downloadBinaryInjectable, () => downloadBinary);
     });
 
     rendered = await applicationBuilder.render();
