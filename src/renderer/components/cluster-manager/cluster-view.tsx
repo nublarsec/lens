@@ -104,7 +104,7 @@ class NonInjectedClusterView extends React.Component<Dependencies> {
       }),
 
       reaction(() => [this.cluster?.ready, this.cluster?.disconnected], ([, disconnected]) => {
-        if (this.isViewLoaded.get() && disconnected) {
+        if (disconnected) {
           this.props.navigateToCatalog(); // redirect to catalog when active cluster get disconnected/not available
         }
       }),
