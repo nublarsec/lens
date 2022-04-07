@@ -11,7 +11,7 @@ import { disposeOnUnmount, observer } from "mobx-react";
 import { ClusterStatus } from "./cluster-status";
 import type { ClusterFrameHandler } from "./lens-views";
 import type { Cluster } from "../../../common/cluster/cluster";
-import { ClusterStore } from "../../../common/cluster-store/cluster-store";
+import type { ClusterStore } from "../../../common/cluster-store/cluster-store";
 import { requestClusterActivation } from "../../ipc";
 import { withInjectables } from "@ogre-tools/injectable-react";
 import type { NavigateToCatalog } from "../../../common/front-end-routing/routes/catalog/navigate-to-catalog.injectable";
@@ -22,6 +22,7 @@ import type { CatalogEntityRegistry } from "../../api/catalog/entity/registry";
 import catalogEntityRegistryInjectable from "../../api/catalog/entity/registry.injectable";
 import type { ClusterConnectionStatusState } from "./cluster-status.state.injectable";
 import clusterConnectionStatusStateInjectable from "./cluster-status.state.injectable";
+import clusterStoreInjectable from "../../../common/cluster-store/cluster-store.injectable";
 
 interface Dependencies {
   clusterId: IComputedValue<string>;
@@ -29,12 +30,11 @@ interface Dependencies {
   navigateToCatalog: NavigateToCatalog;
   entityRegistry: CatalogEntityRegistry;
   clusterConnectionStatusState: ClusterConnectionStatusState;
+  clusterStore: ClusterStore;
 }
 
 @observer
 class NonInjectedClusterView extends React.Component<Dependencies> {
-  private readonly store = ClusterStore.getInstance();
-
   constructor(props: Dependencies) {
     super(props);
     makeObservable(this);
@@ -45,7 +45,7 @@ class NonInjectedClusterView extends React.Component<Dependencies> {
   }
 
   @computed get cluster(): Cluster | undefined {
-    return this.store.getById(this.clusterId);
+    return this.props.clusterStore.getById(this.clusterId);
   }
 
   private readonly isViewLoaded = computed(() => this.props.clusterFrames.hasLoadedView(this.clusterId), {
@@ -79,7 +79,7 @@ class NonInjectedClusterView extends React.Component<Dependencies> {
         disposeOnUnmount(this, [
           when(
             () => {
-              const cluster = this.store.getById(clusterId);
+              const cluster = this.props.clusterStore.getById(clusterId);
 
               if (!cluster) {
                 return true;
@@ -137,6 +137,7 @@ export const ClusterView = withInjectables<Dependencies>(NonInjectedClusterView,
     clusterFrames: di.inject(clusterFramesInjectable),
     entityRegistry: di.inject(catalogEntityRegistryInjectable),
     clusterConnectionStatusState: di.inject(clusterConnectionStatusStateInjectable),
+    clusterStore: di.inject(clusterStoreInjectable),
   }),
 });
 
