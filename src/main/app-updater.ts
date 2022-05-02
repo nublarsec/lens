@@ -9,7 +9,7 @@ import logger from "./logger";
 import { isPublishConfigured, isTestEnv } from "../common/vars";
 import { delay } from "../common/utils";
 import type { UpdateAvailableToBackchannel } from "../common/ipc";
-import { areArgsUpdateAvailableToBackchannel, AutoUpdateChecking, AutoUpdateLogPrefix, AutoUpdateNoUpdateAvailable, broadcastMessage, onceCorrect, UpdateAvailableChannel } from "../common/ipc";
+import { areArgsUpdateAvailableToBackchannel, AutoUpdateChannel, AutoUpdateLogPrefix, broadcastMessage, onceCorrect, UpdateAvailableChannel } from "../common/ipc";
 import { once } from "lodash";
 import { ipcMain } from "electron";
 import { nextUpdateChannel } from "./utils/update-channel";
@@ -109,7 +109,7 @@ export const startUpdateChecking = once(function (interval = 1000 * 60 * 60 * 24
         autoUpdater.checkForUpdates()
           .catch(error => logger.error(`${AutoUpdateLogPrefix}: failed with an error`, error));
       } else {
-        broadcastMessage(AutoUpdateNoUpdateAvailable);
+        broadcastMessage(AutoUpdateChannel, "not-available");
       }
     });
 
@@ -131,7 +131,7 @@ export async function checkForUpdates(): Promise<void> {
 
     autoUpdater.channel = userStore.updateChannel;
     autoUpdater.allowDowngrade = userStore.isAllowedToDowngrade;
-    broadcastMessage(AutoUpdateChecking);
+    broadcastMessage(AutoUpdateChannel, "checking");
     await autoUpdater.checkForUpdates();
   } catch (error) {
     logger.error(`${AutoUpdateLogPrefix}: failed with an error`, error);

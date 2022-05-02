@@ -7,13 +7,14 @@ import React from "react";
 import type { IpcRendererEvent } from "electron";
 import { ipcRenderer } from "electron";
 import type { UpdateAvailableFromMain, BackchannelArg } from "../../common/ipc";
-import { areArgsUpdateAvailableFromMain, UpdateAvailableChannel, onCorrect, ipcRendererOn, AutoUpdateChecking, AutoUpdateNoUpdateAvailable } from "../../common/ipc";
+import { areArgsUpdateAvailableFromMain, UpdateAvailableChannel, onCorrect, ipcRendererOn, AutoUpdateChannel } from "../../common/ipc";
 import { Notifications, notificationsStore } from "../components/notifications";
 import { Button } from "../components/button";
 import { isMac } from "../../common/vars";
 import { defaultHotbarCells } from "../../common/hotbar-types";
 import { type ListNamespaceForbiddenArgs, clusterListNamespaceForbiddenChannel, isListNamespaceForbiddenArgs } from "../../common/ipc/cluster";
 import { hotbarTooManyItemsChannel } from "../../common/ipc/hotbar";
+import type { AutoUpdateState, AutoUpdateStateName } from "../../common/auto-update/auto-update-state.injectable";
 
 function sendToBackchannel(backchannel: string, notificationId: string, data: BackchannelArg): void {
   notificationsStore.remove(notificationId);
@@ -71,9 +72,10 @@ interface Dependencies {
     event: IpcRendererEvent,
     ...[clusterId]: ListNamespaceForbiddenArgs
   ) => void;
+  updateState: AutoUpdateState;
 }
 
-export const registerIpcListeners = ({ listNamespacesForbiddenHandler }: Dependencies) => () => {
+export const registerIpcListeners = ({ listNamespacesForbiddenHandler, updateState }: Dependencies) => () => {
   onCorrect({
     source: ipcRenderer,
     channel: UpdateAvailableChannel,
@@ -92,10 +94,10 @@ export const registerIpcListeners = ({ listNamespacesForbiddenHandler }: Depende
     listener: HotbarTooManyItemsHandler,
     verifier: (args: unknown[]): args is [] => args.length === 0,
   });
-  ipcRendererOn(AutoUpdateChecking, () => {
-    Notifications.shortInfo("Checking for updates");
+  ipcRendererOn(AutoUpdateChannel, (event, state: AutoUpdateStateName) => {
+    updateState.name =state;
   });
-  ipcRendererOn(AutoUpdateNoUpdateAvailable, () => {
-    Notifications.shortInfo("No update is currently available");
+  ipcRendererOn(UpdateAvailableChannel, () => {
+    updateState.name = "available";
   });
 };

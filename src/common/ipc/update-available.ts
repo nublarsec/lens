@@ -6,8 +6,7 @@
 import type { UpdateInfo } from "electron-updater";
 
 export const UpdateAvailableChannel = "update-available";
-export const AutoUpdateChecking = "auto-update:checking";
-export const AutoUpdateNoUpdateAvailable = "auto-update:no-update";
+export const AutoUpdateChannel = "auto-update";
 export const AutoUpdateLogPrefix = "[UPDATE-CHECKER]";
 
 export type UpdateAvailableFromMain = [backChannel: string, updateInfo: UpdateInfo];
