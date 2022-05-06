@@ -6,11 +6,6 @@
 import type { RenderResult } from "@testing-library/react";
 import type { ApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
 import { getApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
-import isAutoUpdateEnabledInjectable from "../../main/is-auto-update-enabled.injectable";
-import type { UserStore } from "../../common/user-store";
-import userStoreInjectable from "../../common/user-store/user-store.injectable";
-import type { ThemeStore } from "../../renderer/theme.store";
-import themeStoreInjectable from "../../renderer/theme-store.injectable";
 
 describe("preferences - navigation using application menu", () => {
   let applicationBuilder: ApplicationBuilder;
@@ -18,19 +13,6 @@ describe("preferences - navigation using application menu", () => {
 
   beforeEach(async () => {
     applicationBuilder = getApplicationBuilder();
-    applicationBuilder.beforeApplicationStart(({ rendererDi, mainDi }) => {
-      mainDi.override(isAutoUpdateEnabledInjectable, () => () => false);
-
-      const userStoreStub = {
-        extensionRegistryUrl: { customUrl: "some-custom-url" },
-      } as unknown as UserStore;
-
-      rendererDi.override(userStoreInjectable, () => userStoreStub);
-
-      const themeStoreStub = { themeOptions: [] } as unknown as ThemeStore;
-
-      rendererDi.override(themeStoreInjectable, () => themeStoreStub);
-    });
 
     rendered = await applicationBuilder.render();
   });

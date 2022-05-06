@@ -5,10 +5,6 @@
 import type { RenderResult } from "@testing-library/react";
 import type { ApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
 import { getApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
-import userStoreInjectable from "../../common/user-store/user-store.injectable";
-import type { UserStore } from "../../common/user-store";
-import themeStoreInjectable from "../../renderer/theme-store.injectable";
-import type { ThemeStore } from "../../renderer/theme.store";
 import type { LensRendererExtension } from "../../extensions/lens-renderer-extension";
 import React from "react";
 import { getRendererExtensionFake } from "../../renderer/components/test-utils/get-renderer-extension-fake";
@@ -18,18 +14,6 @@ describe("preferences - navigation to extension specific preferences", () => {
 
   beforeEach(() => {
     applicationBuilder = getApplicationBuilder();
-
-    applicationBuilder.beforeApplicationStart(({ rendererDi }) => {
-      const userStoreStub = {
-        extensionRegistryUrl: { customUrl: "some-custom-url" },
-      } as unknown as UserStore;
-
-      rendererDi.override(userStoreInjectable, () => userStoreStub);
-
-      const themeStoreStub = { themeOptions: [] } as unknown as ThemeStore;
-
-      rendererDi.override(themeStoreInjectable, () => themeStoreStub);
-    });
   });
 
   describe("given in preferences, when rendered", () => {

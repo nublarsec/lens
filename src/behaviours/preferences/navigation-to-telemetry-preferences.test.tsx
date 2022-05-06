@@ -7,10 +7,6 @@ import React from "react";
 import type { ApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
 import { getApplicationBuilder } from "../../renderer/components/test-utils/get-application-builder";
 import { getRendererExtensionFake } from "../../renderer/components/test-utils/get-renderer-extension-fake";
-import type { UserStore } from "../../common/user-store";
-import userStoreInjectable from "../../common/user-store/user-store.injectable";
-import type { ThemeStore } from "../../renderer/theme.store";
-import themeStoreInjectable from "../../renderer/theme-store.injectable";
 import navigateToTelemetryPreferencesInjectable from "../../common/front-end-routing/routes/preferences/telemetry/navigate-to-telemetry-preferences.injectable";
 import sentryDnsUrlInjectable from "../../renderer/components/+preferences/sentry-dns-url.injectable";
 
@@ -19,18 +15,6 @@ describe("preferences - navigation to telemetry preferences", () => {
 
   beforeEach(() => {
     applicationBuilder = getApplicationBuilder();
-
-    applicationBuilder.beforeApplicationStart(({ rendererDi }) => {
-      const userStoreStub = {
-        extensionRegistryUrl: { customUrl: "some-custom-url" },
-      } as unknown as UserStore;
-
-      rendererDi.override(userStoreInjectable, () => userStoreStub);
-
-      const themeStoreStub = { themeOptions: [] } as unknown as ThemeStore;
-
-      rendererDi.override(themeStoreInjectable, () => themeStoreStub);
-    });
   });
 
   describe("given in preferences, when rendered", () => {

@@ -38,6 +38,8 @@ import apiManagerInjectable from "./components/kube-object-menu/dependencies/api
 import { ApiManager } from "../common/k8s-api/api-manager";
 import lensResourcesDirInjectable from "../common/vars/lens-resources-dir.injectable";
 import broadcastMessageInjectable from "../common/ipc/broadcast-message.injectable";
+import { observable } from "mobx";
+import defaultShellInjectable from "./components/+preferences/default-shell.injectable";
 
 export const getDiForUnitTesting = (
   { doGeneralOverrides } = { doGeneralOverrides: false },
@@ -81,11 +83,17 @@ export const getDiForUnitTesting = (
     // eslint-disable-next-line unused-imports/no-unused-vars-ts
     di.override(clusterStoreInjectable, () => ({ getById: (id): Cluster => ({}) as Cluster }) as ClusterStore);
 
+    di.override(defaultShellInjectable, () => "some-default-shell");
+
     di.override(
       userStoreInjectable,
       () =>
         ({
           isTableColumnHidden: () => false,
+          extensionRegistryUrl: { customUrl: "some-custom-url" },
+          syncKubeconfigEntries: observable.map(),
+          terminalConfig: { fontSize: 42 },
+          editorConfiguration: { minimap: {}, tabSize: 42, fontSize: 42 },
         } as unknown as UserStore),
     );
 
@@ -117,6 +125,8 @@ export const getDiForUnitTesting = (
       activeTheme: {
         type: "some-active-theme-type",
       },
+
+      themeOptions: [],
     }));
 
   }

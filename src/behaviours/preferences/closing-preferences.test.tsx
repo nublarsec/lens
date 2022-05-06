@@ -10,10 +10,6 @@ import { getApplicationBuilder } from "../../renderer/components/test-utils/get-
 import currentPathInjectable from "../../renderer/routes/current-path.injectable";
 import { routeInjectionToken } from "../../common/front-end-routing/route-injection-token";
 import { computed } from "mobx";
-import type { UserStore } from "../../common/user-store";
-import userStoreInjectable from "../../common/user-store/user-store.injectable";
-import type { ThemeStore } from "../../renderer/theme.store";
-import themeStoreInjectable from "../../renderer/theme-store.injectable";
 import { preferenceNavigationItemInjectionToken } from "../../renderer/components/+preferences/preferences-navigation/preference-navigation-items.injectable";
 import routeIsActiveInjectable from "../../renderer/routes/route-is-active.injectable";
 import { Preferences } from "../../renderer/components/+preferences";
@@ -39,16 +35,6 @@ describe("preferences - closing-preferences", () => {
       rendererDi.register(testFrontPageRouteInjectable);
       rendererDi.register(testFrontPageRouteComponentInjectable);
       rendererDi.register(testNavigationItemInjectable);
-
-      const userStoreStub = {
-        extensionRegistryUrl: { customUrl: "some-custom-url" },
-      } as unknown as UserStore;
-
-      rendererDi.override(userStoreInjectable, () => userStoreStub);
-
-      const themeStoreStub = { themeOptions: [] } as unknown as ThemeStore;
-
-      rendererDi.override(themeStoreInjectable, () => themeStoreStub);
 
       rendererDi.override(navigateToFrontPageInjectable, (di) => {
         const navigateToRoute = di.inject(navigateToRouteInjectionToken);
