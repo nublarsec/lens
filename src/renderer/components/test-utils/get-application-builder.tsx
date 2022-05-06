@@ -27,7 +27,7 @@ import mainExtensionsInjectable from "../../../extensions/main-extensions.inject
 import type { LensMainExtension } from "../../../extensions/lens-main-extension";
 import currentRouteComponentInjectable from "../../routes/current-route-component.injectable";
 import { pipeline } from "@ogre-tools/fp";
-import { flatMap, compact, join, get, filter } from "lodash/fp";
+import { flatMap, compact, join, get, filter, find, map } from "lodash/fp";
 import preferenceNavigationItemsInjectable from "../+preferences/preferences-navigation/preference-navigation-items.injectable";
 import navigateToPreferencesInjectable from "../../../common/front-end-routing/routes/preferences/navigate-to-preferences.injectable";
 import type { MenuItemOpts } from "../../../main/menu/application-menu-items.injectable";
@@ -43,6 +43,7 @@ import clusterFrameContextInjectable from "../../cluster-frame-context/cluster-f
 import startMainApplicationInjectable from "../../../main/start-main-application/start-main-application.injectable";
 import startFrameInjectable from "../../start-frame/start-frame.injectable";
 import { flushPromises } from "../../../common/test-utils/flush-promises";
+import trayMenuItemsInjectable from "../../../main/tray/tray-menu-item/tray-menu-items.injectable";
 
 type Callback = (dis: DiContainers) => void | Promise<void>;
 
@@ -54,6 +55,10 @@ export interface ApplicationBuilder {
   beforeApplicationStart: (callback: Callback) => ApplicationBuilder;
   beforeRender: (callback: Callback) => ApplicationBuilder;
   render: () => Promise<RenderResult>;
+
+  tray: {
+    click: (id: string) => Promise<void>;
+  };
 
   applicationMenu: {
     click: (path: string) => Promise<void>;
@@ -167,6 +172,32 @@ export const getApplicationBuilder = () => {
         menuItem.click(undefined, undefined, undefined);
 
         await flushPromises();
+      },
+    },
+
+    tray: {
+      click: async (id: string) => {
+        const trayMenuItems = mainDi.inject(
+          trayMenuItemsInjectable,
+        );
+
+        const menuItem = pipeline(
+          trayMenuItems.get(),
+          find((menuItem) => menuItem.id === id),
+        );
+
+        if (!menuItem) {
+          const availableIds = pipeline(
+            trayMenuItems.get(),
+            filter(item => !!item.click),
+            map(item => item.id),
+            join(", "),
+          );
+
+          throw new Error(`Tried to click tray menu item with ID ${id} which does not exist. Available IDs are: "${availableIds}"`);
+        }
+
+        await menuItem.click();
       },
     },
 

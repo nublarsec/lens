@@ -78,6 +78,7 @@ import broadcastMessageInjectable from "../common/ipc/broadcast-message.injectab
 import getElectronThemeInjectable from "./electron-app/features/get-electron-theme.injectable";
 import syncThemeFromOperatingSystemInjectable from "./electron-app/features/sync-theme-from-operating-system.injectable";
 import platformInjectable from "../common/vars/platform.injectable";
+import productNameInjectable from "./app-paths/app-name/product-name.injectable";
 
 export const getDiForUnitTesting = (
   { doGeneralOverrides } = { doGeneralOverrides: false },
@@ -107,6 +108,8 @@ export const getDiForUnitTesting = (
     di.override(environmentVariablesInjectable, () => ({}));
     di.override(commandLineArgumentsInjectable, () => []);
 
+    di.override(productNameInjectable, () => "some-product-name");
+
     di.override(clusterFramesInjectable, () => observable.map<string, ClusterFrameInfo>());
 
     di.override(stopServicesAndExitAppInjectable, () => () => {});
@@ -129,7 +132,7 @@ export const getDiForUnitTesting = (
 
     // eslint-disable-next-line unused-imports/no-unused-vars-ts
     di.override(clusterStoreInjectable, () => ({ provideInitialFromMain: () => {}, getById: (id): Cluster => ({}) as Cluster }) as ClusterStore);
-    di.override(userStoreInjectable, () => ({ startMainReactions: () => {} }) as UserStore);
+    di.override(userStoreInjectable, () => ({ startMainReactions: () => {}, extensionRegistryUrl: { customUrl: "some-custom-url" }}) as UserStore);
 
     di.override(appNameInjectable, () => "some-app-name");
     di.override(registerChannelInjectable, () => () => undefined);
