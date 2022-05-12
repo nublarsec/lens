@@ -23,6 +23,8 @@ import catalogEntityRegistryInjectable from "../../api/catalog/entity/registry.i
 import type { ClusterConnectionStatusState } from "./cluster-status.state.injectable";
 import clusterConnectionStatusStateInjectable from "./cluster-status.state.injectable";
 import clusterStoreInjectable from "../../../common/cluster-store/cluster-store.injectable";
+import type { Disposer } from "../../utils";
+import { disposer } from "../../utils";
 
 interface Dependencies {
   clusterId: IComputedValue<string>;
@@ -35,6 +37,8 @@ interface Dependencies {
 
 @observer
 class NonInjectedClusterView extends React.Component<Dependencies> {
+  private navigateToClusterDisposer?: Disposer;
+
   constructor(props: Dependencies) {
     super(props);
     makeObservable(this);
@@ -71,42 +75,34 @@ class NonInjectedClusterView extends React.Component<Dependencies> {
   bindEvents() {
     disposeOnUnmount(this, [
       reaction(() => this.clusterId, async (clusterId) => {
+        this.navigateToClusterDisposer?.();
         this.props.clusterFrames.setVisibleCluster(clusterId);
         this.props.clusterFrames.initView(clusterId);
         requestClusterActivation(clusterId, false); // activate and fetch cluster's state from main
         this.props.entityRegistry.activeEntity = clusterId;
 
-        disposeOnUnmount(this, [
+        const navigateToClusterDisposer = disposer(
           when(
+            () => this.cluster?.disconnected === false,
             () => {
-              const cluster = this.props.clusterStore.getById(clusterId);
-
-              if (!cluster) {
-                return true;
-              }
-
-              return (
-                cluster.ready && cluster.available && this.props.clusterFrames.hasLoadedView(clusterId)
-              ) || (
-                cluster.disconnected // covers manual disconnection before connection
-              );
-            },
-            () => {
-              const state = this.props.clusterConnectionStatusState.forCluster(clusterId);
-
-              state.clearReconnectingState();
-              state.resetAuthOutput();
+              navigateToClusterDisposer.push(when(
+                // The clusterId check makes sure that we are still talking about the same cluster
+                () => (this.cluster?.disconnected ?? true) && this.clusterId === clusterId,
+                () => {
+                  this.props.navigateToCatalog();
+                },
+              ));
             },
           ),
+        );
+
+        this.navigateToClusterDisposer = navigateToClusterDisposer;
+
+        disposeOnUnmount(this, [
+          navigateToClusterDisposer,
         ]);
       }, {
         fireImmediately: true,
-      }),
-
-      reaction(() => [this.cluster?.ready, this.cluster?.disconnected], ([, disconnected]) => {
-        if (disconnected) {
-          this.props.navigateToCatalog(); // redirect to catalog when active cluster get disconnected/not available
-        }
       }),
     ]);
   }
