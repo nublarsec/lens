@@ -40,6 +40,8 @@ import lensResourcesDirInjectable from "../common/vars/lens-resources-dir.inject
 import broadcastMessageInjectable from "../common/ipc/broadcast-message.injectable";
 import { observable } from "mobx";
 import defaultShellInjectable from "./components/+preferences/default-shell.injectable";
+import notificationListenerInjectable from "./components/notifications/notification-listener.injectable";
+import { notificationChannel } from "../common/notification/notification-channel";
 
 export const getDiForUnitTesting = (
   { doGeneralOverrides } = { doGeneralOverrides: false },
@@ -101,6 +103,8 @@ export const getDiForUnitTesting = (
 
     di.override(getValueFromRegisteredChannelInjectable, () => () => undefined);
     di.override(registerIpcChannelListenerInjectable, () => () => undefined);
+
+    di.override(notificationListenerInjectable, () => ({ channel: notificationChannel, handle: () => {} }));
 
     overrideFsWithFakes(di);
 
