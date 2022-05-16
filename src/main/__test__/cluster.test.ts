@@ -19,6 +19,9 @@ import listNamespacesInjectable from "../../common/cluster/list-namespaces.injec
 import createContextHandlerInjectable from "../context-handler/create-context-handler.injectable";
 import type { ClusterContextHandler } from "../context-handler/context-handler";
 import { parse } from "url";
+import normalizedPlatformInjectable from "../../common/vars/normalized-platform.injectable";
+import kubectlBinaryNameInjectable from "../kubectl/binary-name.injectable";
+import kubectlDownloadingNormalizedArchInjectable from "../kubectl/normalized-arch.injectable";
 
 console = new Console(process.stdout, process.stderr); // fix mockFS
 
@@ -56,6 +59,10 @@ describe("create clusters", () => {
     });
 
     await di.runSetups();
+
+    di.override(kubectlBinaryNameInjectable, () => "kubectl");
+    di.override(kubectlDownloadingNormalizedArchInjectable, () => "amd64");
+    di.override(normalizedPlatformInjectable, () => "darwin");
 
     di.override(authorizationReviewInjectable, () => () => () => Promise.resolve(true));
     di.override(listNamespacesInjectable, () => () => () => Promise.resolve([ "default" ]));

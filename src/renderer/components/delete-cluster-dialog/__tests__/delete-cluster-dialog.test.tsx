@@ -21,6 +21,9 @@ import openDeleteClusterDialogInjectable from "../open.injectable";
 import storesAndApisCanBeCreatedInjectable from "../../../stores-apis-can-be-created.injectable";
 import createKubeconfigManagerInjectable from "../../../../main/kubeconfig-manager/create-kubeconfig-manager.injectable";
 import ipcRendererInjectable from "../../../app-paths/get-value-from-registered-channel/ipc-renderer/ipc-renderer.injectable";
+import normalizedPlatformInjectable from "../../../../common/vars/normalized-platform.injectable";
+import kubectlBinaryNameInjectable from "../../../../main/kubectl/binary-name.injectable";
+import kubectlDownloadingNormalizedArchInjectable from "../../../../main/kubectl/normalized-arch.injectable";
 
 jest.mock("electron", () => ({
   app: {
@@ -102,6 +105,9 @@ describe("<DeleteClusterDialog />", () => {
     render = renderFor(rendererDi);
     mainDi.override(createContextHandlerInjectable, () => () => undefined);
     mainDi.override(createKubeconfigManagerInjectable, () => () => undefined);
+    mainDi.override(kubectlBinaryNameInjectable, () => "kubectl");
+    mainDi.override(kubectlDownloadingNormalizedArchInjectable, () => "amd64");
+    mainDi.override(normalizedPlatformInjectable, () => "darwin");
     mockFs();
 
     rendererDi.override(storesAndApisCanBeCreatedInjectable, () => true);

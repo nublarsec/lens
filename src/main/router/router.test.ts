@@ -16,6 +16,9 @@ import mockFs from "mock-fs";
 import type { MockInstance } from "jest-mock";
 import type { SetRequired } from "type-fest";
 import type { Route, RouteHandler } from "./route";
+import normalizedPlatformInjectable from "../../common/vars/normalized-platform.injectable";
+import kubectlBinaryNameInjectable from "../kubectl/binary-name.injectable";
+import kubectlDownloadingNormalizedArchInjectable from "../kubectl/normalized-arch.injectable";
 
 type AsyncFnMock<
   TToBeMocked extends (...args: any[]) => any,
@@ -38,6 +41,9 @@ describe("router", () => {
     mockFs();
 
     di.override(parseRequestInjectable, () => () => Promise.resolve({ payload: "some-payload" }));
+    di.override(kubectlBinaryNameInjectable, () => "kubectl");
+    di.override(kubectlDownloadingNormalizedArchInjectable, () => "amd64");
+    di.override(normalizedPlatformInjectable, () => "darwin");
 
     await di.runSetups();
 
