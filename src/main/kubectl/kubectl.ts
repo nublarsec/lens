@@ -69,6 +69,8 @@ export class Kubectl {
       version = new SemVer(Kubectl.bundledKubectlVersion);
     }
 
+    console.log(`Parsed ${clusterVersion} as ${version}`);
+
     const fromMajorMinor = kubectlMap.get(`${version.major}.${version.minor}`);
 
     /**

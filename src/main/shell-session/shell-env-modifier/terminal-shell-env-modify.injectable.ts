@@ -5,15 +5,16 @@
 
 import { getInjectable } from "@ogre-tools/injectable";
 import mainExtensionsInjectable from "../../../extensions/main-extensions.injectable";
+import catalogEntityRegistryInjectable from "../../catalog/entity-registry.injectable";
 import { terminalShellEnvModify } from "./terminal-shell-env-modifiers";
 
 const terminalShellEnvModifyInjectable = getInjectable({
   id: "terminal-shell-env-modify",
 
-  instantiate: (di) =>
-    terminalShellEnvModify({
-      extensions: di.inject(mainExtensionsInjectable),
-    }),
+  instantiate: (di) => terminalShellEnvModify({
+    extensions: di.inject(mainExtensionsInjectable),
+    entityRegistry: di.inject(catalogEntityRegistryInjectable),
+  }),
 });
 
 export default terminalShellEnvModifyInjectable;

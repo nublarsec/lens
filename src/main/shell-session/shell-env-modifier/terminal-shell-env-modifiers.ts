@@ -8,14 +8,20 @@ import { computed } from "mobx";
 import type { ClusterId } from "../../../common/cluster-types";
 import { isDefined } from "../../../common/utils";
 import type { LensMainExtension } from "../../../extensions/lens-main-extension";
-import { catalogEntityRegistry } from "../../catalog";
+import type { CatalogEntityRegistry } from "../../catalog";
 
 interface Dependencies {
   extensions: IComputedValue<LensMainExtension[]>;
+  entityRegistry: CatalogEntityRegistry;
 }
 
-export const terminalShellEnvModify = ({ extensions }: Dependencies) =>
-  (clusterId: ClusterId, env: Record<string, string | undefined>) => {
+export type TerminalShellEnvModify = (clusterId: ClusterId, env: Partial<Record<string, string>>) => Partial<Record<string, string>>;
+
+export const terminalShellEnvModify = ({
+  extensions,
+  entityRegistry,
+}: Dependencies): TerminalShellEnvModify => (
+  (clusterId, env) => {
     const terminalShellEnvModifiers = computed(() => (
       extensions.get()
         .map((extension) => extension.terminalShellEnvModifier)
@@ -27,7 +33,7 @@ export const terminalShellEnvModify = ({ extensions }: Dependencies) =>
       return env;
     }
 
-    const entity = catalogEntityRegistry.findById(clusterId);
+    const entity = entityRegistry.findById(clusterId);
 
     if (entity) {
       const ctx = { catalogEntity: entity };
@@ -38,4 +44,5 @@ export const terminalShellEnvModify = ({ extensions }: Dependencies) =>
     }
 
     return env;
-  };
+  }
+);
