@@ -20,13 +20,13 @@ export type InputValidationResult<IsAsync extends boolean> = (
 
 export type InputValidate<IsAsync extends boolean, RequireProps extends boolean> = (
   RequireProps extends false
-    ? (value: string) => InputValidationResult<IsAsync>
+    ? (value: string, props?: InputProps) => InputValidationResult<IsAsync>
     : RequireProps extends true
       ? (value: string, props: InputProps) => InputValidationResult<IsAsync>
       : never
 );
 
-export type InputValidator<IsAsync extends boolean, RequireProps extends boolean = false> = {
+export type InputValidator<IsAsync extends boolean, RequireProps extends boolean> = {
   /**
    * Filters itself based on the input props
    */
@@ -51,6 +51,10 @@ export type InputValidator<IsAsync extends boolean, RequireProps extends boolean
       }
       : never
 );
+
+export function isAsyncInputValidator<RequireProps extends boolean>(validator: InputValidator<boolean, RequireProps>): validator is InputValidator<true, RequireProps> {
+  return typeof validator.debounce === "number";
+}
 
 export function asyncInputValidator(validator: InputValidator<true, false>): InputValidator<true, false>;
 export function asyncInputValidator<RequireProps extends boolean>(validator: InputValidator<true, RequireProps>): InputValidator<true, RequireProps>;
