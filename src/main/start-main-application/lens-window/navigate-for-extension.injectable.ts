@@ -29,7 +29,7 @@ const navigateForExtensionInjectable = getInjectable({
         (frameInfo) => frameInfo.frameId === frameId,
       );
 
-      await applicationWindow.send({
+      applicationWindow.send({
         channel: "extension:navigate",
         frameInfo,
         data: [extId, pageId, params],
