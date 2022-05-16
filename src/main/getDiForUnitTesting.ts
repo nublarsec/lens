@@ -15,7 +15,6 @@ import registerChannelInjectable from "./app-paths/register-channel/register-cha
 import writeJsonFileInjectable from "../common/fs/write-json-file.injectable";
 import readJsonFileInjectable from "../common/fs/read-json-file.injectable";
 import readFileInjectable from "../common/fs/read-file.injectable";
-import directoryForBundledBinariesInjectable from "../common/app-paths/directory-for-bundled-binaries/directory-for-bundled-binaries.injectable";
 import loggerInjectable from "../common/logger.injectable";
 import spawnInjectable from "./child-process/spawn.injectable";
 import extensionsStoreInjectable from "../extensions/extensions-store/extensions-store.injectable";
@@ -36,6 +35,7 @@ import { joinPathsFake } from "../common/test-utils/join-paths-fake";
 import hotbarStoreInjectable from "../common/hotbars/store.injectable";
 import type { GetDiForUnitTestingOptions } from "../test-utils/get-dis-for-unit-testing";
 import { noop } from "../renderer/utils";
+import baseBundeledBinariesDirectoryInjectable from "../common/vars/base-bundled-binaries-dir.injectable";
 
 export function getDiForUnitTesting(opts: GetDiForUnitTestingOptions = {}) {
   const {
@@ -79,7 +79,7 @@ export function getDiForUnitTesting(opts: GetDiForUnitTestingOptions = {}) {
     di.override(setElectronAppPathInjectable, () => () => undefined);
     di.override(appNameInjectable, () => "some-electron-app-name");
     di.override(registerChannelInjectable, () => () => undefined);
-    di.override(directoryForBundledBinariesInjectable, () => "some-bin-directory");
+    di.override(baseBundeledBinariesDirectoryInjectable, () => "some-bin-directory");
     di.override(spawnInjectable, () => () => {
       return {
         stderr: { on: jest.fn(), removeAllListeners: jest.fn() },
