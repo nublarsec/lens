@@ -59,7 +59,7 @@ const createLensWindowInjectable = getInjectable({
 
         return {
           get visible() {
-            return !!this.browserWindow;
+            return !!browserWindow;
           },
 
           show: async () => {
