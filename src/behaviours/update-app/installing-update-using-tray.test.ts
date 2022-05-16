@@ -16,13 +16,13 @@ import type { UpdateChannel, UpdateChannelId } from "../../main/update-app/updat
 import { updateChannels } from "../../main/update-app/update-channels";
 import downloadPlatformUpdateInjectable from "../../main/update-app/download-platform-update/download-platform-update.injectable";
 import selectedUpdateChannelInjectable from "../../main/update-app/selected-update-channel.injectable";
-import progressOfUpdateDownloadInjectable from "../../main/update-app/progress-of-update-download.injectable";
 import type { IComputedValue } from "mobx";
 import setUpdateOnQuitInjectable from "../../main/electron-app/features/set-update-on-quit.injectable";
 import showApplicationWindowInjectable from "../../main/start-main-application/lens-window/show-application-window.injectable";
 import type { AskBoolean } from "../../main/ask-boolean/ask-boolean.injectable";
 import askBooleanInjectable from "../../main/ask-boolean/ask-boolean.injectable";
 import showNotificationInjectable from "../../renderer/components/notifications/show-notification.injectable";
+import progressOfUpdateDownloadInjectable from "../../common/application-update/progress-of-update-download/progress-of-update-download.injectable";
 
 
 describe("installing update using tray", () => {
@@ -212,7 +212,7 @@ describe("installing update using tray", () => {
             progressOfUpdateDownloadInjectable,
           );
 
-          progressOfUpdateDownload.setValue(42);
+          progressOfUpdateDownload.set(42);
 
           expect(
             applicationBuilder.tray.get("check-for-updates").label.get(),
