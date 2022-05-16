@@ -12,7 +12,7 @@ import type { KubernetesCluster } from "../../../../common/catalog-entities";
 import { FilePicker, OverSizeLimitStyle } from "../../file-picker";
 import { MenuActions, MenuItem } from "../../menu";
 import { Avatar } from "../../avatar";
-import { getIconColourHash } from "../../../../common/catalog/helpers";
+import { getIconBackground, getIconColourHash } from "../../../../common/catalog/helpers";
 import { EntityIcon } from "../../entity-icon";
 
 enum GeneralInputStatus {
@@ -81,6 +81,7 @@ export class ClusterIconSetting extends React.Component<ClusterIconSettingProps>
               label={(
                 <Avatar
                   colorHash={getIconColourHash(entity)}
+                  background={getIconBackground(entity)}
                   size={53}
                 >
                   <EntityIcon entity={entity}/>

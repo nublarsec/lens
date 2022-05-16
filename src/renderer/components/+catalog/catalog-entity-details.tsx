@@ -17,7 +17,7 @@ import { Avatar } from "../avatar";
 import type { GetLabelBadges } from "./get-label-badges.injectable";
 import { withInjectables } from "@ogre-tools/injectable-react";
 import getLabelBadgesInjectable from "./get-label-badges.injectable";
-import { getIconColourHash } from "../../../common/catalog/helpers";
+import { getIconBackground, getIconColourHash } from "../../../common/catalog/helpers";
 import { EntityIcon } from "../entity-icon";
 
 export interface CatalogEntityDetailsProps {
@@ -55,7 +55,7 @@ class NonInjectedCatalogEntityDetails extends Component<CatalogEntityDetailsProp
                 colorHash={getIconColourHash(entity)}
                 size={128}
                 data-testid="detail-panel-hot-bar-icon"
-                background={entity.spec.icon?.background}
+                background={getIconBackground(entity)}
                 onClick={onRun}
                 className={styles.avatar}
               >

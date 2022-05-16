@@ -23,7 +23,7 @@ import type { Navigate } from "../../navigation/navigate.injectable";
 import type { NormalizeCatalogEntityContextMenu } from "../../catalog/normalize-menu-item.injectable";
 import navigateInjectable from "../../navigation/navigate.injectable";
 import normalizeCatalogEntityContextMenuInjectable from "../../catalog/normalize-menu-item.injectable";
-import { getIconColourHash } from "../../../common/catalog/helpers";
+import { getIconBackground, getIconColourHash } from "../../../common/catalog/helpers";
 import { EntityIcon } from "../entity-icon";
 
 export interface SidebarClusterProps {
@@ -111,6 +111,7 @@ const NonInjectedSidebarCluster = observer(({
     >
       <Avatar
         colorHash={getIconColourHash(clusterEntity)}
+        background={getIconBackground(clusterEntity)}
         size={40}
         className={styles.avatar}
       >

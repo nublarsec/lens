@@ -9,7 +9,7 @@ import type { CatalogEntity } from "../../../common/catalog";
 import { GeneralEntity, KubernetesCluster } from "../../../common/catalog-entities";
 import { getShortName } from "../../../common/catalog/helpers";
 
-export function EntityIcon({ entity }: { entity?: CatalogEntity }): JSX.Element {
+export function EntityIcon({ entity }: { entity?: CatalogEntity }) {
   if (!entity) {
     return null;
   }

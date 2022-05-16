@@ -12,7 +12,7 @@ import React from "react";
 import type { RegisteredAdditionalCategoryColumn } from "../custom-category-columns";
 import hotbarStoreInjectable from "../../../../common/hotbars/store.injectable";
 import type { HotbarStore } from "../../../../common/hotbars/store";
-import { getIconColourHash } from "../../../../common/catalog/helpers";
+import { getIconBackground, getIconColourHash } from "../../../../common/catalog/helpers";
 import { EntityIcon } from "../../entity-icon";
 
 const renderEntityName = (hotbarStore: HotbarStore) => (entity: CatalogEntity) => {
@@ -27,7 +27,7 @@ const renderEntityName = (hotbarStore: HotbarStore) => (entity: CatalogEntity) =
     <>
       <Avatar
         colorHash={getIconColourHash(entity)}
-        background={entity.spec.icon?.background}
+        background={getIconBackground(entity)}
         className={styles.catalogAvatar}
         size={24}
       >

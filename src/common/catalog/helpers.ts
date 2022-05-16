@@ -3,10 +3,9 @@
  * Licensed under MIT License. See LICENSE in root directory for more information.
  */
 
-import { CatalogEntity } from "./catalog-entity";
+import type { CatalogEntity } from "./catalog-entity";
 import GraphemeSplitter from "grapheme-splitter";
-import { iter } from "../utils";
-import type { HotbarItemEntity } from "../hotbar-types";
+import { hasOwnProperty, hasTypedProperty, isObject, isString, iter } from "../utils";
 
 function getNameParts(name: string): string[] {
   const byWhitespace = name.split(/\s+/);
@@ -46,10 +45,31 @@ export function getShortName(entity: CatalogEntity): string {
   return entity.metadata.shortName || computeDefaultShortName(entity.getName());
 }
 
-export function getIconColourHash(entity: CatalogEntity | HotbarItemEntity): string {
-  if (entity instanceof CatalogEntity) {
-    return `${entity.metadata.name}-${entity.metadata.source}`;
+export function getIconColourHash(entity: CatalogEntity): string {
+  return `${entity.metadata.name}-${entity.metadata.source}`;
+}
+
+export function getIconBackground(entity: CatalogEntity): string | undefined {
+  if (isObject(entity.spec.icon)) {
+    if (hasTypedProperty(entity.spec.icon, "background", isString)) {
+      return entity.spec.icon.background;
+    }
+
+    return hasOwnProperty(entity.spec.icon, "src")
+      ? "transparent"
+      : undefined;
   }
 
-  return `${entity.name}-${entity.source}`;
+  return undefined;
+}
+
+export function getIconMaterial(entity: CatalogEntity): string | undefined {
+  if (
+    isObject(entity.spec.icon)
+    && hasTypedProperty(entity.spec.icon, "material", isString)
+  ) {
+    return entity.spec.icon.material;
+  }
+
+  return undefined;
 }
